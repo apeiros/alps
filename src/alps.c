@@ -31,6 +31,9 @@ AlpsDrop alpsdrop(AlpsVector position, AlpsVector velocity) {
 
   return drop;
 }
+void alpsdrop_tick(AlpsDrop *drop) {
+  drop->position = alpsvector_add(drop->position, drop->velocity);
+}
 
 char *alpsdrop_inspect(AlpsDrop drop) {
   char *result=malloc(256); // overkill

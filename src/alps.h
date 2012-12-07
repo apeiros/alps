@@ -31,3 +31,4 @@ char        *alpsvector_inspect(AlpsVector vec);
 AlpsDrop    alpsdrop(AlpsVector position, AlpsVector velocity);
 char        *alpsdrop_inspect(AlpsDrop drop);
 void        alpsdrop_print(AlpsDrop drop);
+void        alpsdrop_tick(AlpsDrop *drop);

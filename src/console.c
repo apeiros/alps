@@ -11,6 +11,9 @@ int main(int argc, char * argv[]) {
 
   alpsdrop_print(drop);
   printf("\n");
+  alpsdrop_tick(&drop);
+  alpsdrop_print(drop);
+  printf("\n");
 
   return 0;
 }
