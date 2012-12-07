@@ -34,7 +34,7 @@ AlpsDrop *alpsdrop_init(AlpsDrop *drop, AlpsVector p, AlpsVector v) {
 
 AlpsDrop *alpsdrop_initrandom(AlpsDrop *drop) {
   AlpsVector p = alpsvector(rand() % SCREEN_W, 0.0);
-  AlpsVector v = alpsvector(0.0, 1 + rand() % 3);
+  AlpsVector v = alpsvector(0.0, 1 + ((double)(rand() % 10))/10);
   return alpsdrop_init(drop, p, v);
 }
 
@@ -43,6 +43,11 @@ void alpsdrop_tick(AlpsDrop *drop) {
   if (drop->position.y >= SCREEN_H) {
     alpsdrop_initrandom(drop);
   }
+}
+void alpsdrop_draw(AlpsDrop *drop) {
+  al_put_pixel(drop->position.x, drop->position.y, al_map_rgb(DROP_COLOR));
+  al_put_pixel(drop->position.x, drop->position.y+1, al_map_rgb(DROP_COLOR));
+  al_put_pixel(drop->position.x, drop->position.y+2, al_map_rgb(DROP_COLOR));
 }
 
 char *alpsdrop_inspect(AlpsDrop drop) {
@@ -56,4 +61,32 @@ void alpsdrop_print(AlpsDrop drop) {
   s = alpsdrop_inspect(drop);
   printf("%s", s);
   free(s);
+}
+
+
+AlpsShower *alpsshower_initrandom(AlpsShower *shower) {
+  int i;
+  shower->intensity  = 0;                // use later
+  shower->abberation = 0.0;              // use later
+  shower->velocity   = alpsvector(0, 0); // use later
+
+  for(i=0; i<ALPS_SHOWER_DROPS; i++) {
+    alpsdrop_initrandom(&(shower->drops[i]));
+  }
+
+  return shower;
+}
+void alpsshower_tick(AlpsShower *shower) {
+  int i;
+  for(i=0; i<ALPS_SHOWER_DROPS; i++) {
+    alpsdrop_tick(&(shower->drops[i]));
+    //alpsdrop_tick(shower->drops[i]);
+  }
+}
+void alpsshower_draw(AlpsShower *shower) {
+  int i;
+  for(i=0; i<ALPS_SHOWER_DROPS; i++) {
+    alpsdrop_draw(&(shower->drops[i]));
+    //alpsdrop_draw(shower->drops[i]);
+  }
 }

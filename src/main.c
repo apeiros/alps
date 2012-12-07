@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 int main_loop(ALLEGRO_DISPLAY * display, ALLEGRO_EVENT_QUEUE   * queue) {
-  AlpsDrop drop;
+  AlpsShower shower;
 
-  alpsdrop_initrandom(&drop);
+  alpsshower_initrandom(&shower);
   int busy  = 1;
 
   ALLEGRO_EVENT event;
@@ -22,11 +22,11 @@ int main_loop(ALLEGRO_DISPLAY * display, ALLEGRO_EVENT_QUEUE   * queue) {
     }
 
     // Update Gamestate
-    alpsdrop_tick(&drop);
+    alpsshower_tick(&shower);
 
     // Drawing
     al_clear_to_color(al_map_rgb(0,0,0));
-    al_put_pixel(drop.position.x, drop.position.y, al_map_rgb(128,128,255));
+    alpsshower_draw(&shower);
     al_flip_display();
   }
   return busy;

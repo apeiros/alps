@@ -4,7 +4,8 @@
 
 #define SCREEN_W 640
 #define SCREEN_H 480
-#define ALPS_SHOWER_DROPS 100
+#define ALPS_SHOWER_DROPS 200
+#define DROP_COLOR 128,128,255
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
@@ -45,6 +46,12 @@ AlpsDrop    *alpsdrop_init(AlpsDrop *drop, AlpsVector p, AlpsVector v);
 AlpsDrop    *alpsdrop_initrandom(AlpsDrop *drop);
 char        *alpsdrop_inspect(AlpsDrop drop);
 void        alpsdrop_print(AlpsDrop drop);
+void        alpsdrop_draw(AlpsDrop *drop);
 void        alpsdrop_tick(AlpsDrop *drop);
+
+AlpsShower  *alpsshower_initrandom(AlpsShower *shower);
+void        alpsshower_tick(AlpsShower *drop);
+void        alpsshower_draw(AlpsShower *shower);
+
 
 #endif
