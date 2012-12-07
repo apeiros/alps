@@ -50,6 +50,7 @@ void        alpsdrop_draw(AlpsDrop *drop);
 void        alpsdrop_tick(AlpsDrop *drop);
 
 AlpsShower  *alpsshower_initrandom(AlpsShower *shower);
+AlpsShower *alpsshower_each(AlpsShower *shower, void (*iterator)(AlpsDrop *drop));
 void        alpsshower_tick(AlpsShower *drop);
 void        alpsshower_draw(AlpsShower *shower);
 

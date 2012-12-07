@@ -70,23 +70,21 @@ AlpsShower *alpsshower_initrandom(AlpsShower *shower) {
   shower->abberation = 0.0;              // use later
   shower->velocity   = alpsvector(0, 0); // use later
 
-  for(i=0; i<ALPS_SHOWER_DROPS; i++) {
-    alpsdrop_initrandom(shower->drops+i);
-  }
+  alpsshower_each(shower, &alpsdrop_initrandom);
 
   return shower;
 }
-void alpsshower_tick(AlpsShower *shower) {
+AlpsShower *alpsshower_each(AlpsShower *shower, void (*iterator)(AlpsDrop *drop)) {
   int i;
   for(i=0; i<ALPS_SHOWER_DROPS; i++) {
-    alpsdrop_tick(shower->drops+i);
-    //alpsdrop_tick(shower->drops[i]);
+    iterator(shower->drops+i);
   }
+  return shower;
+}
+
+void alpsshower_tick(AlpsShower *shower) {
+  alpsshower_each(shower, &alpsdrop_tick);
 }
 void alpsshower_draw(AlpsShower *shower) {
-  int i;
-  for(i=0; i<ALPS_SHOWER_DROPS; i++) {
-    alpsdrop_draw(shower->drops+i);
-    //alpsdrop_draw(shower->drops[i]);
-  }
+  alpsshower_each(shower, &alpsdrop_draw);
 }
