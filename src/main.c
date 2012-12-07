@@ -1,4 +1,3 @@
-
 #include "alps.h"
 #include <stdlib.h>
 
@@ -7,7 +6,11 @@
 
 
 int main_loop(ALLEGRO_DISPLAY * display, ALLEGRO_EVENT_QUEUE   * queue) {
-  int busy = 1;
+  AlpsDrop drop;
+
+  drop      = alpsdrop(alpsvector(165.0, -1.0), alpsvector(1.2, 4.3));
+  int busy  = 1;
+
   ALLEGRO_EVENT event;
   while (busy) {
     while(al_get_next_event(queue, &event)) {
@@ -20,9 +23,11 @@ int main_loop(ALLEGRO_DISPLAY * display, ALLEGRO_EVENT_QUEUE   * queue) {
         }
       }
     }
+    alpsdrop_tick(&drop);
+    if (drop.position.y >= 640) {
+      drop = alpsdrop(alpsvector(165.0, -1.0), alpsvector(1.2, 4.3));
+    }
     /* Draw here: */
-    
-    
   }
   return busy;
 }
