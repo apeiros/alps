@@ -8,11 +8,12 @@
 int main_loop(ALLEGRO_DISPLAY * display, ALLEGRO_EVENT_QUEUE   * queue) {
   AlpsDrop drop;
 
-  drop      = alpsdrop(alpsvector(165.0, -1.0), alpsvector(1.2, 4.3));
+  drop      = alpsdrop(alpsvector(165.0, -1.0), alpsvector(0.3, 1.2));
   int busy  = 1;
 
   ALLEGRO_EVENT event;
   while (busy) {
+    // Gather userinput
     while(al_get_next_event(queue, &event)) {
       if(event.type == ALLEGRO_EVENT_KEY_DOWN) { 
         switch(((ALLEGRO_KEYBOARD_EVENT*)&event)->keycode) {
@@ -23,11 +24,17 @@ int main_loop(ALLEGRO_DISPLAY * display, ALLEGRO_EVENT_QUEUE   * queue) {
         }
       }
     }
+
+    // Update Gamestate
     alpsdrop_tick(&drop);
     if (drop.position.y >= 640) {
       drop = alpsdrop(alpsvector(165.0, -1.0), alpsvector(1.2, 4.3));
     }
-    /* Draw here: */
+
+    // Drawing
+    al_clear_to_color(al_map_rgb(0,0,0));
+    al_put_pixel(drop.position.x, drop.position.y, al_map_rgb(128,128,255));
+    al_flip_display();
   }
   return busy;
 }
