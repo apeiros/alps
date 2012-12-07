@@ -2,13 +2,10 @@
 #include "alps.h"
 
 int main(int argc, char * argv[]) {
-  AlpsVector pos, vel;
   AlpsDrop drop;
   int i;
 
-  pos   = alpsvector(165.0, -1.0);
-  vel   = alpsvector(1.2, 4.3);
-  drop  = alpsdrop(pos, vel);
+  drop  = alpsdrop(alpsvector(165.0, -1.0), alpsvector(1.2, 4.3));
 
   alpsdrop_print(drop);
   printf("\n");
