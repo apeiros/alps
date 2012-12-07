@@ -1,14 +1,10 @@
 #include "alps.h"
 #include <stdlib.h>
 
-#define SCREEN_W 640
-#define SCREEN_H 480
-
-
 int main_loop(ALLEGRO_DISPLAY * display, ALLEGRO_EVENT_QUEUE   * queue) {
   AlpsDrop drop;
 
-  drop      = alpsdrop(alpsvector(165.0, -1.0), alpsvector(0.3, 1.2));
+  alpsdrop_initrandom(&drop);
   int busy  = 1;
 
   ALLEGRO_EVENT event;
@@ -27,9 +23,6 @@ int main_loop(ALLEGRO_DISPLAY * display, ALLEGRO_EVENT_QUEUE   * queue) {
 
     // Update Gamestate
     alpsdrop_tick(&drop);
-    if (drop.position.y >= 640) {
-      drop = alpsdrop(alpsvector(165.0, -1.0), alpsvector(1.2, 4.3));
-    }
 
     // Drawing
     al_clear_to_color(al_map_rgb(0,0,0));

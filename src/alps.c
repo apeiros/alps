@@ -26,13 +26,23 @@ char *alpsvector_inspect(AlpsVector vec)
 
 
 
-AlpsDrop alpsdrop(AlpsVector position, AlpsVector velocity) {
-  AlpsDrop drop = {position, velocity};
-
+AlpsDrop *alpsdrop_init(AlpsDrop *drop, AlpsVector p, AlpsVector v) {
+  drop->position = p;
+  drop->velocity = v;
   return drop;
 }
+
+AlpsDrop *alpsdrop_initrandom(AlpsDrop *drop) {
+  AlpsVector p = alpsvector(rand() % SCREEN_W, 0.0);
+  AlpsVector v = alpsvector(0.0, 1 + rand() % 3);
+  return alpsdrop_init(drop, p, v);
+}
+
 void alpsdrop_tick(AlpsDrop *drop) {
   drop->position = alpsvector_add(drop->position, drop->velocity);
+  if (drop->position.y >= SCREEN_H) {
+    alpsdrop_initrandom(drop);
+  }
 }
 
 char *alpsdrop_inspect(AlpsDrop drop) {
