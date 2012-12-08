@@ -3,4 +3,5 @@
 # files here manually.
 set(ALPS_SRC_FILES
   src/alps.c
+  src/framerate.c
 )
