@@ -29,38 +29,52 @@ char *alpsvector_inspect(AlpsVector vec)
 AlpsDrop *alpsdrop_init(AlpsDrop *drop, AlpsVector p, AlpsVector v) {
   drop->position = p;
   drop->velocity = v;
+
   return drop;
 }
 
 AlpsDrop *alpsdrop_initrandom(AlpsDrop *drop) {
   AlpsVector p = alpsvector(rand() % SCREEN_W, 0.0);
   AlpsVector v = alpsvector(0.0, 1 + ((double)(rand() % 10))/10);
+
   return alpsdrop_init(drop, p, v);
 }
 
-void alpsdrop_tick(AlpsDrop *drop) {
+AlpsDrop *alpsdrop_tick(AlpsDrop *drop) {
   drop->position = alpsvector_add(drop->position, drop->velocity);
   if (drop->position.y >= SCREEN_H) {
     alpsdrop_initrandom(drop);
   }
+
+  return drop;
 }
-void alpsdrop_draw(AlpsDrop *drop) {
-  al_put_pixel(drop->position.x, drop->position.y, al_map_rgb(DROP_COLOR));
-  al_put_pixel(drop->position.x, drop->position.y+1, al_map_rgb(DROP_COLOR));
-  al_put_pixel(drop->position.x, drop->position.y+2, al_map_rgb(DROP_COLOR));
+AlpsDrop *alpsdrop_draw(AlpsDrop *drop) {
+  ALLEGRO_COLOR DropColor;
+  DropColor = al_map_rgb(128,128,255);
+
+  al_draw_line(
+    drop->position.x, drop->position.y,
+    drop->position.x, drop->position.y+4,
+    DropColor,
+    1
+  );
+
+  return drop;
 }
 
-char *alpsdrop_inspect(AlpsDrop drop) {
-  char *result=malloc(256); // overkill
-  sprintf(result, "#<Drop x: %.0lf, y: %.0lf, +x: %.2lf, +y: %.2lf>", drop.position.x, drop.position.y, drop.velocity.x, drop.velocity.y);
-
-  return result;
-}
-void alpsdrop_print(AlpsDrop drop) {
+AlpsDrop *alpsdrop_print(AlpsDrop *drop) {
   char *s;
   s = alpsdrop_inspect(drop);
   printf("%s", s);
   free(s);
+
+  return drop;
+}
+char *alpsdrop_inspect(AlpsDrop *drop) {
+  char *result=malloc(256); // overkill
+  sprintf(result, "#<Drop x: %.0lf, y: %.0lf, +x: %.2lf, +y: %.2lf>", drop->position.x, drop->position.y, drop->velocity.x, drop->velocity.y);
+
+  return result;
 }
 
 
@@ -70,21 +84,18 @@ AlpsShower *alpsshower_initrandom(AlpsShower *shower) {
   shower->abberation = 0.0;              // use later
   shower->velocity   = alpsvector(0, 0); // use later
 
-  alpsshower_each(shower, &alpsdrop_initrandom);
-
-  return shower;
+  return alpsshower_each(shower, &alpsdrop_initrandom);
 }
-AlpsShower *alpsshower_each(AlpsShower *shower, void (*iterator)(AlpsDrop *drop)) {
+AlpsShower *alpsshower_each(AlpsShower *shower, AlpsDrop *(*iterator)(AlpsDrop *drop)) {
   int i;
-  for(i=0; i<ALPS_SHOWER_DROPS; i++) {
-    iterator(shower->drops+i);
-  }
+  for(i=0; i<ALPS_SHOWER_DROPS; i++) iterator(shower->drops+i);
+
   return shower;
 }
 
-void alpsshower_tick(AlpsShower *shower) {
-  alpsshower_each(shower, &alpsdrop_tick);
+AlpsShower *alpsshower_tick(AlpsShower *shower) {
+  return alpsshower_each(shower, &alpsdrop_tick);
 }
-void alpsshower_draw(AlpsShower *shower) {
-  alpsshower_each(shower, &alpsdrop_draw);
+AlpsShower *alpsshower_draw(AlpsShower *shower) {
+  return alpsshower_each(shower, &alpsdrop_draw);
 }
