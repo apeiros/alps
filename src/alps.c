@@ -1,9 +1,15 @@
 #include "alps.h"
 
+
+float frand() {
+  return rand()*(1.0/RAND_MAX);
+}
+
+
 /*
  * Returns a new AlpsVector
  */
-AlpsVector alpsvector(double x, double y) {
+AlpsVector alpsvector(float x, float y) {
   AlpsVector result = { x, y };
 
   return result;
@@ -16,6 +22,14 @@ AlpsVector alpsvector_add(AlpsVector a, AlpsVector b) {
   return alpsvector(a.x+b.x,  a.y+b.y);
 }
 
+AlpsVector alpsvector_add_x_y(AlpsVector a, float x, float y) {
+  return alpsvector(a.x+x,  a.y+y);
+}
+
+AlpsVector alpsvector_multiply(AlpsVector vector, float factor) {
+  return alpsvector(vector.x*factor,  vector.y*factor);
+}
+
 char *alpsvector_inspect(AlpsVector vec)
 {
     char *result=malloc(256); // overkill
@@ -26,38 +40,31 @@ char *alpsvector_inspect(AlpsVector vec)
 
 
 
-AlpsDrop *alpsdrop_init(AlpsDrop *drop, AlpsVector p, AlpsVector v) {
-  drop->position = p;
-  drop->velocity = v;
+AlpsDrop *alpsdrop_init(AlpsDrop *drop, AlpsVector position) {
+  drop->position = position;
+  drop->color    = al_map_rgb(128,128,255);
 
   return drop;
 }
 
-AlpsDrop *alpsdrop_initrandom(AlpsDrop *drop) {
-  AlpsVector p = alpsvector(rand() % SCREEN_W, 0.0);
-  AlpsVector v = alpsvector(0.0, 1 + ((double)(rand() % 10))/10);
-
-  return alpsdrop_init(drop, p, v);
-}
-
-AlpsDrop *alpsdrop_tick(AlpsDrop *drop) {
-  drop->position = alpsvector_add(drop->position, drop->velocity);
-  if (drop->position.y >= SCREEN_H) {
-    alpsdrop_initrandom(drop);
+AlpsDrop *alpsdrop_move(AlpsDrop *drop, float x, float y) {
+  if (drop->position.y > SCREEN_W) {
+    drop->position = alpsvector(rand()%(2*SCREEN_W)-SCREEN_W, -10.0);
   }
+  drop->last_position = drop->position;
+  drop->position      = alpsvector_add_x_y(drop->position, x, y);
 
   return drop;
 }
 AlpsDrop *alpsdrop_draw(AlpsDrop *drop) {
-  ALLEGRO_COLOR DropColor;
-  DropColor = al_map_rgb(128,128,255);
-
-  al_draw_line(
-    drop->position.x, drop->position.y,
-    drop->position.x, drop->position.y+4,
-    DropColor,
-    1
-  );
+  if (drop->position.y > 0) {
+    al_draw_line(
+      drop->last_position.x, drop->last_position.y,
+      drop->position.x,      drop->position.y,
+      drop->color,
+      1.5
+    );
+  }
 
   return drop;
 }
@@ -72,7 +79,7 @@ AlpsDrop *alpsdrop_print(AlpsDrop *drop) {
 }
 char *alpsdrop_inspect(AlpsDrop *drop) {
   char *result=malloc(256); // overkill
-  sprintf(result, "#<Drop x: %.0lf, y: %.0lf, +x: %.2lf, +y: %.2lf>", drop->position.x, drop->position.y, drop->velocity.x, drop->velocity.y);
+  sprintf(result, "#<Drop x: %.0lf, y: %.0lf>", drop->position.x, drop->position.y);
 
   return result;
 }
@@ -80,11 +87,16 @@ char *alpsdrop_inspect(AlpsDrop *drop) {
 
 AlpsShower *alpsshower_initrandom(AlpsShower *shower) {
   int i;
-  shower->intensity  = 0;                // use later
-  shower->abberation = 0.0;              // use later
-  shower->velocity   = alpsvector(0, 0); // use later
+  shower->intensity = (rand()%10) + 5;
+  shower->index     = 0;
+  shower->wind      = 4.0*(frand()-0.5);
 
-  return alpsshower_each(shower, &alpsdrop_initrandom);
+  for(i=0; i<ALPS_SHOWER_DROPS; i++) {
+    alpsdrop_init(shower->drops+i, alpsvector(rand()%(2*SCREEN_W)-(SCREEN_W/2), -(rand()%(SCREEN_H*2)))); 
+  }
+  alpsshower_tick(shower);
+
+  return shower;
 }
 AlpsShower *alpsshower_each(AlpsShower *shower, AlpsDrop *(*iterator)(AlpsDrop *drop)) {
   int i;
@@ -94,7 +106,12 @@ AlpsShower *alpsshower_each(AlpsShower *shower, AlpsDrop *(*iterator)(AlpsDrop *
 }
 
 AlpsShower *alpsshower_tick(AlpsShower *shower) {
-  return alpsshower_each(shower, &alpsdrop_tick);
+  int i;
+  for(i=0; i<ALPS_SHOWER_DROPS; i++) {
+    alpsdrop_move(shower->drops+i, shower->wind, 4.5);
+  }
+
+  return shower;
 }
 AlpsShower *alpsshower_draw(AlpsShower *shower) {
   return alpsshower_each(shower, &alpsdrop_draw);

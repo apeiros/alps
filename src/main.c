@@ -51,6 +51,7 @@ int main(void) {
   ALLEGRO_DISPLAY       * display;
   ALLEGRO_EVENT_QUEUE   * queue;
 
+  srand(time(NULL));
   al_init();
   display = al_create_display(SCREEN_W, SCREEN_H);
   if(!display)  return 1;

@@ -2,10 +2,6 @@
 #define ALPS_H_INCLUDED
 
 
-#define SCREEN_W 1024
-#define SCREEN_H 768
-#define ALPS_SHOWER_DROPS 1000
-
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -19,36 +15,43 @@
 
 #include "framerate.h"
 
+#define SCREEN_W 1024
+#define SCREEN_H 768
+#define ALPS_SHOWER_DROPS 1000
+
 typedef struct AlpsVector_  AlpsVector;
 typedef struct AlpsDrop_    AlpsDrop;
 typedef struct AlpsShower_  AlpsShower;
 
 struct AlpsVector_ {
-  double x;
-  double y;
+  float x;
+  float y;
 };
 
 struct AlpsDrop_ {
-  AlpsVector position;
-  AlpsVector velocity;
+  AlpsVector    position;
+  AlpsVector    last_position;
+  ALLEGRO_COLOR color;
 };
 
 struct AlpsShower_ {
-  int         intensity;
-  float       abberation;
-  AlpsVector  velocity;
+  int         intensity;  // drops per tick generated
+  int         index;
+  float       wind;       // horizontal velocity
   AlpsDrop    drops[ALPS_SHOWER_DROPS];
 };
 
-AlpsVector  alpsvector(double x, double y);
+float       frand();
+
+AlpsVector  alpsvector(float x, float y);
 AlpsVector  alpsvector_add(AlpsVector a, AlpsVector b);
+AlpsVector  alpsvector_multiply(AlpsVector vector, float factor);
 char        *alpsvector_inspect(AlpsVector vec);
 
-AlpsDrop    *alpsdrop_init(AlpsDrop *drop, AlpsVector p, AlpsVector v);
-AlpsDrop    *alpsdrop_initrandom(AlpsDrop *drop);
+AlpsDrop    *alpsdrop_init(AlpsDrop *drop, AlpsVector position);
+AlpsDrop    *alpsdrop_move(AlpsDrop *drop, float x, float y);
 AlpsDrop    *alpsdrop_print(AlpsDrop *drop);
 AlpsDrop    *alpsdrop_draw(AlpsDrop *drop);
-AlpsDrop    *alpsdrop_tick(AlpsDrop *drop);
 char        *alpsdrop_inspect(AlpsDrop *drop);
 
 AlpsShower  *alpsshower_initrandom(AlpsShower *shower);
