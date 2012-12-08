@@ -4,7 +4,7 @@
 
 #define SCREEN_W 640
 #define SCREEN_H 480
-#define ALPS_SHOWER_DROPS 200
+#define ALPS_SHOWER_DROPS 1000
 #define DROP_COLOR 128,128,255
 
 #include <allegro5/allegro.h>
@@ -13,6 +13,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
+#include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
